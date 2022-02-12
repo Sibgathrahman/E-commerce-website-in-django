@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+
+<section class="section-conten padding-y bg">
+
+    {% include 'includes/alerts.html' %} 
+    <div class="container">
+        <div class="row">
+        {% include 'accounts/dashboard_sidebar.html' %}
+        <main class="col-md-9">
+            <article class="card">
+            <header class="card-header">
+                <strong class="d-inline-block mr-3">Edit Profile</strong>
+            </header>
+            <div class="card-body">
+                <div class="row">
+                    <form action="{% url 'editprofile' user.id %}" method="POST">
+                        {% csrf_token %}
+                        {% for user in user_detail %}
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>First Name : </strong></label>
+                            <input type="text" class="form-control" placeholder="{{ user.first_name }}" name="edit_firstname">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>Last Name : </strong></label>
+                            <input type="text" class="form-control" placeholder="{{ user.last_name }}" name="edit_lastname">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>Email : </strong></label>
+                            <input type="email" class="form-control" placeholder="{{ user.email }}" name="edit_email">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>Phone Number : </strong></label>
+                            <input type="number" class="form-control" placeholder="{{ user.phone_number }}" name="edit_phonenumber">
+                        </div>
+                        <div class="col-md-12">
+                            <input type="submit" class="form_control btn btn-primary" value="submit">
+                        </div>
+                        {% endfor %}
+                    </form>
+                </div> <!-- row.// -->
+            </div> <!-- card-body .// -->
+            
+            </article> <!-- order-group.// --> 
+        </main>
+    </div> <!-- row.// -->
+    </div>
+    
+    
+    </section>
+
+
+
+
+{% endblock %}

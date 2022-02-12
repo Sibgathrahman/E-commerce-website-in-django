@@ -1,0 +1,600 @@
+{% extends 'admin/adminBase.html' %}
+
+{% load static %}
+
+
+{% block content %}
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+    integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div class="main-content">
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0 font-size-18">Edit Coupon</h4>
+
+                        <!-- <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="javascript: void(0);">Product Management</a></li>
+            <li class="breadcrumb-item active">Add Product</li>
+        </ol>
+    </div> -->
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <!-- <div class="card-header">
+        <h4 class="card-title">Basic Information</h4>
+        <p class="card-title-desc">Fill all information below</p>
+    </div> -->
+                        {% include 'includes/alerts.html' %}
+                        <div class="card-body">
+
+                            <!-- form starts -->
+                            <form action="{% url 'edit_coupon' %}" method="POST" enctype='multipart/form-data'>
+                                {% csrf_token %}
+                                {% for data in data %}
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="productname">Coupon Name</label>
+                                            <input id="productname" name="coupon_name" type="text" class="form-control" placeholder="{{data.coupon_name}}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="mrp">Coupon ID</label>
+                                            <input id="m" name="coupon_id" type="text" class="form-control" placeholder="{{data.coupon_id}}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="sales">Offer Persontage</label>
+                                            <input id="manufacturerbrand" name="offer_persontage" type="number" placeholder="{{data.offer_persantage}}" class="form-control">
+                                        </div>
+                                    </div>
+
+                                <button class="btn btn-primary" style="width: 100%;">Edit Coupon</button>
+                                </div>
+                                {% endfor %}
+                            </form>
+                        </div>
+
+                        {% block additions %}
+
+
+                        <!-- Jquery Plugin -->
+                        <script src="{% static 'adminAssets/assets/js/ckeditor.js' %}"></script>
+                        <script
+                            src="{% static 'adminAssets/assets/plugin/multi-select/js/jquery.multi-select.js' %}"></script>
+                        <script
+                            src="{% static 'adminAssets/assets/plugin/bootstrap-tagsinput/bootstrap-tagsinput.js' %}"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
+                        <!-- <script src="{% static 'adminAssets/assets/plugin/cropper/cropper.min.js' %}"></script> -->
+                        <script src="{% static 'adminAssets/assets/plugin/cropper/cropper-init.js' %}"></script>
+                        <script src="{% static 'adminAssets/assets/bundles/dropify.bundle.js' %}"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
+                            integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
+                            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+                        <!-- Jquery Page Js -->
+                        <script>
+
+                            //cropping
+
+                            let result1 = document.querySelector('.result1'),
+                                save1 = document.querySelector('.save1'),
+                                cropped1 = document.querySelector('.imageview1'),
+                                upload1 = document.querySelector('#product_image'),
+                                cropper1 = '';
+
+                            upload1.addEventListener('change', (e) => {
+                                var fileName = document.getElementById("product_image").value;
+                                var idxDot = fileName.lastIndexOf(".") + 1;
+                                var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                                if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+                                    if (e.target.files.length) {
+                                        // start file reader
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            if (e.target.result) {
+                                                // create new image
+                                                $("#exampleModalCenter1").modal("show");
+                                                let img1 = document.createElement('img');
+                                                img1.id = 'image1';
+                                                img1.src = e.target.result;
+                                                // clean result before
+                                                result1.innerHTML = '';
+                                                // append new image
+                                                result1.appendChild(img1);
+                                                // init cropper
+                                                cropper1 = new Cropper(img1, {
+                                                    aspectRatio: 8 / 6,
+                                                    viewMode: 1,
+                                                });
+                                            }
+                                        };
+                                        reader.readAsDataURL(e.target.files[0]);
+                                    }
+                                } else {
+                                    swal("this file type is not supported", {
+                                        icon: "error",
+                                    })
+                                    fileName = "";
+                                    console.log(fileName)
+                                }
+                            });
+
+                            save1.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                // get result to data uri
+                                let imgSrc1 = cropper1.getCroppedCanvas({
+                                    width: 800,
+                                    height: 600 // img display value
+                                }).toDataURL();
+                                $("#exampleModalCenter1").modal("hide");
+                                imageview1.src = imgSrc1;
+                                $('#pro_img1').val(imgSrc1)
+
+                            });
+
+                            $(document).ready(function () {
+                                //Ch-editer
+                                ClassicEditor
+                                    .create(document.querySelector('#editor'))
+                                    .catch(error => {
+                                        console.error(error);
+                                    });
+                                //Datatable
+
+                                $('.deleterow').on('click', function () {
+                                    var tablename = $(this).closest('table').DataTable();
+                                    tablename
+                                        .row($(this)
+                                            .parents('tr'))
+                                        .remove()
+                                        .draw();
+
+                                });
+                                //Multiselect
+                                $('#optgroup').multiSelect({ selectableOptgroup: true });
+                            });
+
+                            $(function () {
+                                $('.dropify').dropify();
+
+                                var drEvent = $('#dropify-event').dropify();
+                                drEvent.on('dropify.beforeClear', function (event, element) {
+                                    return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
+                                });
+
+                                drEvent.on('dropify.afterClear', function (event, element) {
+                                    alert('File deleted');
+                                });
+
+                                $('.dropify-fr').dropify({
+                                    messages: {
+                                        default: 'Glissez-dÃ©️posez un fichier ici ou cliquez',
+                                        replace: 'Glissez-dÃ©️posez un fichier ou cliquez pour remplacer',
+                                        remove: 'Supprimer',
+                                        error: 'DÃ©️solÃ©️, le fichier trop volumineux'
+                                    }
+                                });
+                            });
+
+                            //validations
+
+                            function checkName() {
+
+                                var name = document.getElementById('check_name').value;
+
+                                if (name == "") {
+                                    document.getElementById('display_name_error').style.display = "block";
+                                    document.getElementById('display_name_error').innerHTML = "Please enter the name";
+                                    console.log("name check not")
+                                    return false;
+                                } else {
+                                    document.getElementById('display_name_error').style.display = "none";
+                                    console.log("name check")
+                                    return true;
+                                }
+                            }
+                            function checkMrp() {
+
+                                var name = document.getElementById('check_mrp').value;
+
+                                if (name == "") {
+                                    document.getElementById('display_mrp_error').style.display = "block";
+                                    document.getElementById('display_mrp_error').innerHTML = "Please enter the MRP";
+                                    console.log("mrp check not")
+                                    return false;
+                                } else if (name < 0) {
+                                    document.getElementById('display_mrp_error').style.display = "block";
+                                    document.getElementById('display_mrp_error').innerHTML = "Please enter a positive Value";
+                                    console.log("mrp check not")
+                                    return false;
+                                } else {
+                                    document.getElementById('display_mrp_error').style.display = "none";
+                                    console.log("mrp check")
+                                    return true;
+                                }
+                            }
+                            function checkSalePrice() {
+
+                                var name = document.getElementById('check_sale_price').value;
+
+                                if (name == "") {
+                                    document.getElementById('display_sale_price_error').style.display = "block";
+                                    document.getElementById('display_sale_price_error').innerHTML = "Please enter the sale price";
+                                    console.log("sp check not")
+                                    return false;
+                                } else if (name < 0) {
+                                    document.getElementById('display_sale_price_error').style.display = "block";
+                                    document.getElementById('display_sale_price_error').innerHTML = "Please enter a positive Value";
+                                    console.log("sp check not")
+                                    return false;
+                                } else {
+                                    document.getElementById('display_sale_price_error').style.display = "none";
+                                    console.log("sp check")
+                                    return true;
+                                }
+                            }
+                            function checkStock() {
+
+                                var name = document.getElementById('check_stock').value;
+
+                                if (name == "") {
+                                    document.getElementById('display_stock_error').style.display = "block";
+                                    document.getElementById('display_stock_error').innerHTML = "Please enter the stock quantity";
+                                    console.log("stock check not")
+                                    return false;
+                                } else if (name < 0) {
+                                    document.getElementById('display_stock_error').style.display = "block";
+                                    document.getElementById('display_stock_error').innerHTML = "Please enter a positive Value";
+                                    console.log("stock check not")
+                                    return false;
+                                } else {
+                                    document.getElementById('display_stock_error').style.display = "none";
+                                    console.log("stock check")
+                                    return true;
+                                }
+                            }
+                            function checkSize() {
+
+                                const checkbox1 = document.getElementById('sizechek2');
+                                const checkbox2 = document.getElementById('sizechek3');
+                                const checkbox3 = document.getElementById('sizechek4');
+                                const checkbox4 = document.getElementById('sizechek5');
+                                if (checkbox1.checked || checkbox2.checked || checkbox3.checked || checkbox4.checked) {
+                                    document.getElementById('display_size_error').style.display = "none";
+                                    console.log("size check")
+                                    return true;
+                                } else {
+                                    document.getElementById('display_size_error').style.display = "block";
+                                    document.getElementById('display_size_error').innerHTML = "Please Select one Size";
+                                    console.log("size check not")
+                                    return false;
+                                }
+                            }
+
+                            function categoryCheck() {
+
+                                var category = document.getElementById('category_check');
+                                if (category.selectedIndex == -1) {
+                                    document.getElementById('display_category_error').style.display = "block";
+                                    document.getElementById('display_category_error').innerHTML = "Please Select one Category";
+                                    console.log("cat check not")
+                                    return false;
+                                } else {
+                                    document.getElementById('display_category_error').style.display = "none";
+                                    console.log("cat check")
+                                    return true;
+                                }
+                            }
+                            function checkPhoto() {
+
+                                var image = document.getElementById('check_photo').value;
+                                console.log(image.length)
+                                if (image.length == 0) {
+                                    alert("Please fill all the fields including image")
+                                    document.getElementById('display_photo_error').style.display = "block";
+                                    document.getElementById('display_photo_error').innerHTML = "Please enter the name";
+                                    console.log("photo check not")
+                                    return false;
+                                } else {
+                                    document.getElementById('display_photo_error').style.display = "none";
+                                    console.log("photo check")
+                                    return true;
+
+                                }
+                            }
+
+
+                            function checkForm() {
+                                console.log("checking form")
+                                checkName = checkName()
+                                checkMrp = checkMrp()
+                                checkSalePrice = checkSalePrice()
+                                checkStock = checkStock()
+                                checkSize = checkSize()
+                                categoryCheck = categoryCheck()
+                                checkPhoto = checkPhoto()
+
+                                if (checkName == true && checkMrp == true && checkSalePrice == true && checkStock == true
+                                    && checkSize == true && categoryCheck == true && checkPhoto == true) {
+                                    return true;
+                                } else {
+
+                                    return false;
+
+                                }
+                            }
+
+                        </script>
+
+                        <script>
+                            let result2 = document.querySelector('.result2'),
+                                save2 = document.querySelector('.save2'),
+                                cropped2 = document.querySelector('.imageview2'),
+                                upload2 = document.querySelector('#product_gallery1'),
+                                cropper2 = '';
+
+                            upload2.addEventListener('change', (e) => {
+                                var fileName = document.getElementById("product_gallery1").value;
+                                var idxDot = fileName.lastIndexOf(".") + 1;
+                                var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                                if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+                                    if (e.target.files.length) {
+                                        // start file reader
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            if (e.target.result) {
+                                                // create new image
+                                                $("#exampleModalCenter2").modal("show");
+                                                let img2 = document.createElement('img');
+                                                img2.id = 'image2';
+                                                img2.src = e.target.result;
+                                                // clean result before
+                                                result2.innerHTML = '';
+                                                // append new image
+                                                result2.appendChild(img2);
+                                                // init cropper
+                                                cropper2 = new Cropper(img2, {
+                                                    aspectRatio: 8 / 6,
+                                                    viewMode: 1,
+                                                });
+                                            }
+                                        };
+                                        reader.readAsDataURL(e.target.files[0]);
+                                    }
+                                } else {
+                                    swal("this file type is not supported", {
+                                        icon: "error",
+                                    })
+                                    fileName = "";
+                                    console.log(fileName)
+                                }
+                            });
+
+                            save2.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                // get result to data uri
+                                let imgSrc2 = cropper2.getCroppedCanvas({
+                                    width: 800,
+                                    height: 600 // img disp value
+                                }).toDataURL();
+                                $("#exampleModalCenter2").modal("hide");
+                                imageview2.src = imgSrc2;
+                                $('#pro_img2').val(imgSrc2)
+
+                            });
+
+
+                        </script>
+
+                        <script>
+                            let result3 = document.querySelector('.result3'),
+                                save3 = document.querySelector('.save3'),
+                                cropped3 = document.querySelector('.imageview3'),
+                                upload3 = document.querySelector('#product_gallery2'),
+                                cropper3 = '';
+
+                            upload3.addEventListener('change', (e) => {
+                                var fileName = document.getElementById("product_gallery2").value;
+                                var idxDot = fileName.lastIndexOf(".") + 1;
+                                var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                                if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+                                    if (e.target.files.length) {
+                                        // start file reader
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            if (e.target.result) {
+                                                // create new image
+                                                $("#exampleModalCenter3").modal("show");
+                                                let img3 = document.createElement('img');
+                                                img3.id = 'image3';
+                                                img3.src = e.target.result;
+                                                // clean result before
+                                                result3.innerHTML = '';
+                                                // append new image
+                                                result3.appendChild(img3);
+                                                // init cropper
+                                                cropper3 = new Cropper(img3, {
+                                                    aspectRatio: 8 / 6,
+                                                    viewMode: 1,
+                                                });
+                                            }
+                                        };
+                                        reader.readAsDataURL(e.target.files[0]);
+                                    }
+                                } else {
+                                    swal("this file type is not supported", {
+                                        icon: "error",
+                                    })
+                                    fileName = "";
+                                    console.log(fileName)
+                                }
+                            });
+
+                            save3.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                // get result to data uri
+                                let imgSrc3 = cropper3.getCroppedCanvas({
+                                    width: 800,
+                                    height: 600 // img disp value
+                                }).toDataURL();
+                                $("#exampleModalCenter3").modal("hide");
+                                imageview3.src = imgSrc3;
+                                $('#pro_img3').val(imgSrc3)
+
+                            });
+
+
+                        </script>
+
+                        <script>
+                            let result4 = document.querySelector('.result4'),
+                                save4 = document.querySelector('.save4'),
+                                cropped4 = document.querySelector('.imageview4'),
+                                upload4 = document.querySelector('#product_gallery3'),
+                                cropper4 = '';
+
+                            upload4.addEventListener('change', (e) => {
+                                var fileName = document.getElementById("product_gallery3").value;
+                                var idxDot = fileName.lastIndexOf(".") + 1;
+                                var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                                if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+                                    if (e.target.files.length) {
+                                        // start file reader
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            if (e.target.result) {
+                                                // create new image
+                                                $("#exampleModalCenter4").modal("show");
+                                                let img4 = document.createElement('img');
+                                                img4.id = 'image4';
+                                                img4.src = e.target.result;
+                                                // clean result before
+                                                result4.innerHTML = '';
+                                                // append new image
+                                                result4.appendChild(img4);
+                                                // init cropper
+                                                cropper4 = new Cropper(img4, {
+                                                    aspectRatio: 8 / 6,
+                                                    viewMode: 1,
+                                                });
+                                            }
+                                        };
+                                        reader.readAsDataURL(e.target.files[0]);
+                                    }
+                                } else {
+                                    swal("this file type is not supported", {
+                                        icon: "error",
+                                    })
+                                    fileName = "";
+                                    console.log(fileName)
+                                }
+                            });
+
+                            save4.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                // get result to data uri
+                                let imgSrc4 = cropper4.getCroppedCanvas({
+                                    width: 800,
+                                    height: 600 // img disp value
+                                }).toDataURL();
+                                $("#exampleModalCenter4").modal("hide");
+                                imageview4.src = imgSrc4;
+                                $('#pro_img4').val(imgSrc4)
+
+                            });
+
+
+                        </script>
+
+                        <script>
+                            let result5 = document.querySelector('.result5'),
+                                save5 = document.querySelector('.save5'),
+                                cropped5 = document.querySelector('.imageview5'),
+                                upload5 = document.querySelector('#product_gallery4'),
+                                cropper5 = '';
+
+                            upload5.addEventListener('change', (e) => {
+                                var fileName = document.getElementById("product_gallery4").value;
+                                var idxDot = fileName.lastIndexOf(".") + 1;
+                                var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                                if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+                                    if (e.target.files.length) {
+                                        // start file reader
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            if (e.target.result) {
+                                                // create new image
+                                                $("#exampleModalCenter5").modal("show");
+                                                let img5 = document.createElement('img');
+                                                img5.id = 'image5';
+                                                img5.src = e.target.result;
+                                                // clean result before
+                                                result5.innerHTML = '';
+                                                // append new image
+                                                result5.appendChild(img5);
+                                                // init cropper
+                                                cropper5 = new Cropper(img5, {
+                                                    aspectRatio: 8 / 6,
+                                                    viewMode: 1,
+                                                });
+                                            }
+                                        };
+                                        reader.readAsDataURL(e.target.files[0]);
+                                    }
+                                } else {
+                                    swal("this file type is not supported", {
+                                        icon: "error",
+                                    })
+                                    fileName = "";
+                                    console.log(fileName)
+                                }
+                            });
+
+                            save5.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                // get result to data uri
+                                let imgSrc5 = cropper5.getCroppedCanvas({
+                                    width: 800,
+                                    height: 600 // img disp value
+                                }).toDataURL();
+                                $("#exampleModalCenter5").modal("hide");
+                                imageview5.src = imgSrc5;
+                                $('#pro_img5').val(imgSrc5)
+
+                            });
+
+
+                        </script>
+                        {% endblock %}
+
+
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <!-- end row -->
+
+    </div> <!-- container-fluid -->
+</div>
+<!-- End Page-content -->
+
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'admin/adminBase.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Body: Body -->
+<div class="body d-flex py-3">
+  <div class="container-xxl">
+
+    <div class="row align-items-center">
+      <div class="border-0 mb-4">
+        <div
+          class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+          <h3 class="fw-bold mb-0">Order Details</h3>
+
+        </div>
+      </div>
+    </div> <!-- Row end  -->
+  </div>
+  <div class="col-xl-12 col-lg-12">
+    <div class="card mb-3">
+      <div class="card-body">
+        <!-- form -->
+        <form method="POST" action="{% url 'order_details' ordered_items.id %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row g-3 align-items-center">
+            <div class="col-md-12">
+              <label class="form-label">Order Number</label>
+              <label class="form-control">{{ ordered_items.order_number }}</label>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Address</label>
+              <label class="form-control">{{ ordered_items.address }}</label>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Ordered Date</label>
+              <label class="form-control">{{ ordered_items.date }}</label>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Total Amount</label>
+              <label class="form-control">{{ ordered_items.total }}</label>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Status</label>
+              <select class="form-select" size="3" aria-label="size 3 select example" name="status_id">
+                <option>New</option>
+                <option>Shipped</option>
+                <option>Delivered</option>
+                <option>Returned</option>
+                <option>Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-set-task w-sm-100 py-2 px-5 text-uppercase">Save</button>
+        </form>
+
+        <!-- form ends -->
+
+      </div>
+    </div>
+    < </div>
+  </div><!-- Row end  -->
+
+</div>
+</div>
+</div>
+
+</div>
+
+{% block additions %}
+
+
+<!-- Jquery Plugin -->
+<script src="{% static 'adminAssets/assets/js/ckeditor.js' %}"></script>
+<script src="{% static 'adminAssets/assets/plugin/multi-select/js/jquery.multi-select.js' %}"></script>
+<script src="{% static 'adminAssets/assets/plugin/bootstrap-tagsinput/bootstrap-tagsinput.js' %}"></script>
+<script src="{% static 'adminAssets/assets/plugin/cropper/cropper.min.js' %}"></script>
+<script src="{% static 'adminAssets/assets/plugin/cropper/cropper-init.js' %}"></script>
+<script src="{% static 'adminAssets/assets/bundles/dropify.bundle.js' %}"></script>
+
+<!-- Jquery Page Js -->
+<script>
+  $(document).ready(function () {
+    //Ch-editer
+    ClassicEditor
+      .create(document.querySelector('#editor'))
+      .catch(error => {
+        console.error(error);
+      });
+    //Datatable
+
+    $('.deleterow').on('click', function () {
+      var tablename = $(this).closest('table').DataTable();
+      tablename
+        .row($(this)
+          .parents('tr'))
+        .remove()
+        .draw();
+
+    });
+    //Multiselect
+    $('#optgroup').multiSelect({ selectableOptgroup: true });
+  });
+
+  $(function () {
+    $('.dropify').dropify();
+
+    var drEvent = $('#dropify-event').dropify();
+    drEvent.on('dropify.beforeClear', function (event, element) {
+      return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
+    });
+
+    drEvent.on('dropify.afterClear', function (event, element) {
+      alert('File deleted');
+    });
+
+    $('.dropify-fr').dropify({
+      messages: {
+        default: 'Glissez-dÃ©posez un fichier ici ou cliquez',
+        replace: 'Glissez-dÃ©posez un fichier ou cliquez pour remplacer',
+        remove: 'Supprimer',
+        error: 'DÃ©solÃ©, le fichier trop volumineux'
+      }
+    });
+  });
+
+</script>
+{% endblock %}
+{% endblock %}

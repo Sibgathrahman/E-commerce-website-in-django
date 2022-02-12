@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+
+<section class="section-content padding-y bg" id="loa">
+    <div class="container" id="cart_list">
+    
+    <!-- ============================ COMPONENT 1 ================================= -->
+    
+    {% if not cart %}
+
+    <a href="{% url 'home' %}" class="text-center">Continue Shopping</a>
+
+    {% else %}
+    <div class="row">
+        <aside class="col-lg-9">
+            <div class="card cartdata">
+                <table class="table table-borderless table-shopping-cart">
+                    <thead class="text-muted">
+                        <tr class="small text-uppercase">
+                            <th scope="col">Product</th>
+                            <th scope="col" width="120">Quantity</th>
+                            <th scope="col" width="120">Price</th>
+                            <th scope="col" class="text-right" width="200"> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+     {% for item in cart %}   
+                        <tr class="product_data product_row">
+                            <td>
+                                <figure class="itemside align-items-center product-image-container">
+                                    <div class="aside"><img src="{{ item.product.image.url }}" class="img-sm"></div>
+                                    <figcaption class="info">
+                                        <a href="#" class="title text-dark product-title">{{ item.product.product_name }}</a>
+                                        <p class="text-muted small">Matrix: 25 Mpx <br> Brand: Canon</p>
+                                    </figcaption>
+                                </figure>
+                            </td>
+                            <td>
+                                <div class="col"  id="table_body"> 
+                                    <div class="input-group input-spinner quantity">
+                                        <input type="hidden" class="prod_id" value="{{item.product_id}}">
+                                        {% csrf_token %}
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-light decrement-btn changeQuantity" type="button" id="button-plus"> <i class="fa fa-minus"></i> </button>
+                                        </div>
+                                        <input type="text" class="form-control qty-input"  value="{{ item.product_qty }}">
+                                        <div class="input-group-append">
+                                        <button class="btn btn-light increment-btn changeQuantity" type="button" id="button-minus"> <i class="fa fa-plus"></i> </button>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </td>
+                            <td> 
+                                <div class="price-wrap"> 
+                                  <!-- <var class="price ">RS: {{ sub_total }}</var>  -->
+                                  <var class="price"> RS: {{ item.product.mrp }}</var> 
+                                </div> <!-- price-wrap .// -->
+                            </td>
+                            <td class="text-right"> 
+                              <button class="btn btn-danger deleteCartItem" onclick="alert('Are you Sure?')"><i class="fa fa-trash"> Remove</i></button>
+                            </td>
+                        </tr>
+    {% endfor %}
+                </tbody>
+                </table>
+    </div> <!-- card.// -->
+    
+        </aside> <!-- col.// -->
+        <aside class="col-lg-3">
+    
+            <div class="card">
+            <div class="card-body" id="table_carts">
+                <dl class="dlist-align">
+                  <dt>Total price:</dt>
+                  <dd class="text-right changevalue" id="cart_total">{{total}}</dd>
+                </dl>
+                <dl class="dlist-align">
+                  <dt>Tax:</dt>
+                  <dd class="text-right changetax">{{tax}}</dd>
+                </dl>
+                <dl class="dlist-align">
+                  <dt>Grand Total:</dt>
+                  <dd class="text-right text-dark b changetotal"><strong>{{grand_total}}</strong></dd>
+                </dl>
+                <hr>
+                <p class="text-center mb-3">
+                    <img src="{% static './images/misc/payments.png' %}" height="26">
+                </p>
+                <a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a>
+                <a href="#" class="btn btn-light btn-block">Continue Shopping</a>
+            </div> <!-- card-body.// -->
+            </div> <!-- card.// -->
+    
+    </aside> <!-- col.// -->
+    
+    
+    </div> <!-- row.// -->
+    {% endif %}
+    <!-- ============================ COMPONENT 1 END .// ================================= -->
+    
+    </div> <!-- container .//  -->
+    </section>
+    <script>
+      $(document).ready(function(){
+
+        $(document).on('click','.increment-btn', function(e){
+        // $('.increment-btn').click(function(e){
+            e.preventDefault();
+    
+            var inc_value = $(this).closest('.product_data').find('.qty-input').val();
+            var value = parseInt(inc_value, 10);
+            value = isNaN(value) ? 0 : value;
+            if(value < 10)
+            {
+                value++;
+                $(this).closest('.product_data').find('.qty-input').val(value);
+            }
+        });
+
+        $(document).on('click','.decrement-btn', function(e){
+        // $('.decrement-btn').click(function(e){
+            e.preventDefault();
+    
+            var dec_value = $(this).closest('.product_data').find('.qty-input').val();
+            var value = parseInt(dec_value, 10);
+            value = isNaN(value) ? 0 : value;
+            if(value > 1)
+            {
+                value--;
+                $(this).closest('.product_data').find('.qty-input').val(value);
+            }
+        });
+        $('.addToCartBtn').click(function(e){
+            e.preventDefault();
+  
+            var product_id = $(this).closest('.product_data').find('.prod_id').val(); 
+            var product_qty = $(this).closest('.product_data').find('.qty-input').val();
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            $.ajax({
+              method: "POST",
+              url: "{% url 'add_To_Cart' %}",
+              data: {
+                'product_id':product_id,
+                'product_qty':product_qty,
+                csrfmiddlewaretoken: token
+              },
+              success: function (response){
+                console.log(response)
+                $('#loa').load(location.href + ' #loa');
+                // alerty.success(response.status)
+              }  
+            });
+        });
+
+        $(document).on('click','.changeQuantity', function(e){
+        // $('.changeQuantity').click(function(e){
+            e.preventDefault();
+  
+            var product_id = $(this).closest('.product_data').find('.prod_id').val(); 
+            var product_qty = $(this).closest('.product_data').find('.qty-input').val();
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            $.ajax({
+              method: "POST",
+              url: "{% url 'update_cart' %}",
+              data: {
+                'product_id':product_id,
+                'product_qty':product_qty,
+                csrfmiddlewaretoken: token
+              },
+              success: function (response){
+                console.log(response)
+                $('.changeamount').load(location.href + ' .changeamount');
+                $('.changevalue').load(location.href + ' .changevalue');
+                $('.changetotal').load(location.href + ' .changetotal');
+                $('.changetax').load(location.href + ' .changetax');
+                $('.am').load(location.href + ' .am');
+                
+                // alerty.success(response.status)
+              }  
+            });
+        });
+        
+        $(document).on('click','.deleteCartItem', function(e){
+        // $('.deleteCartItem').click(function(e){
+            e.preventDefault();
+
+            var product_id = $(this).closest('.product_data').find('.prod_id').val(); 
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+
+            $.ajax({
+              method: "POST",
+              url: "delete_cart_item",
+              data:{
+                'product_id':product_id,
+                csrfmiddlewaretoken: token
+              },
+              success:function(response){
+                console.log(response)
+                // $('.cartdata').load(location.href + " .cartdata");
+                $('#loa').load(location.href + ' #loa');
+              }
+            });
+        });
+       
+        
+      });
+    </script>
+
+
+{% endblock %}

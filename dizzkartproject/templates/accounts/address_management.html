@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+
+<section class="section-conten padding-y bg">
+
+    {% include 'includes/alerts.html' %} 
+    <div class="container">
+        <div class="row">
+        {% include 'accounts/dashboard_sidebar.html' %}
+        <main class="col-md-9">
+            <article class="card">
+            <header class="card-header">
+                <strong class="d-inline-block mr-3">Address Management</strong>
+            </header>
+            <div class="card-body">
+                {% for address in address %}
+                <div class="row" style="padding-bottom: 40px;">
+                    <div style="background-color: rgb(235, 233, 233); color:black; border-radius: 1rem; width: 100%;" class=" ">
+                        <div class="pl-5" name="address_list" id="address_list" readonly>
+                            <div>
+                                <label class="form-label"><strong>Name : </strong></label>
+                                <span>{{address.first_name}}</span> <span>{{address.last_name}}</span>
+                            </div>
+                            <span>{{address.street_address}}</span> <br> <span>{{address.apartment}}</span> <br>
+                            <span>{{address.town}}</span>, <span>{{address.country}}</span>
+                            <br>
+                            <div>
+                                <label class="form-label"><strong>Pin Code : </strong></label>
+                                <span>{{address.postcode}}</span></span>
+                            </div>
+                            <div>
+                                <label class="form-label"><strong>Phone Number : </strong></label>
+                                <span>{{address.phone_number}}</span></span>
+                            </div>
+                            <div>
+                                <label class="form-label"><strong>Email : </strong></label>
+                                <span>{{address.email}}</span></span>
+                            </div>
+                        </div>
+                      </div>
+                </div> <!-- row.// -->
+                {% endfor %}
+                <button class="btn btn-info mt-2" style="width:12em; height: 3em; padding:0px; font-size:12px; border-radius:7px">
+                    <a style="color:white" href="{% url 'add_new_address' %}">Add New Address</a>
+                </button>
+            </div> <!-- card-body .// -->
+            
+            </article> <!-- order-group.// --> 
+        </main>
+    </div> <!-- row.// -->
+    </div>
+    
+    
+    </section>
+
+
+
+
+{% endblock %}
